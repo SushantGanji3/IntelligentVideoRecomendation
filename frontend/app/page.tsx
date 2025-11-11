@@ -5,6 +5,7 @@ import VideoCard from '@/components/VideoCard'
 import RecommendationSidebar from '@/components/RecommendationSidebar'
 import { Video, Recommendation } from '@/types'
 import { getRecommendations, getVideos } from '@/lib/api'
+import Image from 'next/image'
 
 export default function Home() {
   const [recommendations, setRecommendations] = useState<Recommendation[]>([])
@@ -84,15 +85,20 @@ export default function Home() {
               <div className="mb-6">
                 <div className="bg-white rounded-lg shadow-md p-6">
                   <h2 className="text-2xl font-bold mb-4">{selectedVideo.title}</h2>
-                  <div className="aspect-video bg-gray-200 rounded-lg mb-4 flex items-center justify-center">
+                  <div className="relative aspect-video bg-gray-200 rounded-lg mb-4 overflow-hidden">
                     {selectedVideo.thumbnail_url ? (
-                      <img
+                      <Image
                         src={selectedVideo.thumbnail_url}
                         alt={selectedVideo.title}
-                        className="w-full h-full object-cover rounded-lg"
+                        fill
+                        className="object-cover rounded-lg"
+                        sizes="100vw"
+                        unoptimized={selectedVideo.thumbnail_url?.includes('placeholder')}
                       />
                     ) : (
-                      <div className="text-gray-500">Video Player</div>
+                      <div className="w-full h-full flex items-center justify-center text-gray-500">
+                        Video Player
+                      </div>
                     )}
                   </div>
                   <div className="flex items-center gap-4 text-sm text-gray-600 mb-4">

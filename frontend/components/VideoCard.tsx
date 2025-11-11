@@ -1,5 +1,9 @@
+'use client'
+
 import { Video } from '@/types'
 import { Play } from 'lucide-react'
+import Image from 'next/image'
+import { useState } from 'react'
 
 interface VideoCardProps {
   video: Video
@@ -9,17 +13,23 @@ interface VideoCardProps {
 }
 
 export default function VideoCard({ video, onClick, similarityScore, reason }: VideoCardProps) {
+  const [imageError, setImageError] = useState(false)
+
   return (
     <div
       className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
       onClick={onClick}
     >
       <div className="relative aspect-video bg-gray-200">
-        {video.thumbnail_url ? (
-          <img
+        {video.thumbnail_url && !imageError ? (
+          <Image
             src={video.thumbnail_url}
             alt={video.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            onError={() => setImageError(true)}
+            unoptimized={video.thumbnail_url?.includes('placeholder')}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-400">

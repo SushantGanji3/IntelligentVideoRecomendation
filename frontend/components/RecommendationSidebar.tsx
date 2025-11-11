@@ -1,9 +1,36 @@
+'use client'
+
 import { Recommendation, Video } from '@/types'
 import { TrendingUp, Sparkles } from 'lucide-react'
+import Image from 'next/image'
+import { useState } from 'react'
 
 interface RecommendationSidebarProps {
   recommendations: Recommendation[]
   onVideoClick: (video: Video) => void
+}
+
+const Thumbnail = ({ video, index }: { video: Video; index: number }) => {
+  const [imageError, setImageError] = useState(false)
+  return (
+    <div className="relative flex-shrink-0 w-16 h-12 bg-gray-200 rounded overflow-hidden">
+      {video.thumbnail_url && !imageError ? (
+        <Image
+          src={video.thumbnail_url}
+          alt={video.title}
+          fill
+          className="object-cover"
+          sizes="64px"
+          onError={() => setImageError(true)}
+          unoptimized={video.thumbnail_url?.includes('placeholder')}
+        />
+      ) : (
+        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+          {index + 1}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function RecommendationSidebar({
@@ -28,19 +55,7 @@ export default function RecommendationSidebar({
             onClick={() => onVideoClick(rec.video)}
           >
             <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-16 h-12 bg-gray-200 rounded overflow-hidden">
-                {rec.video.thumbnail_url ? (
-                  <img
-                    src={rec.video.thumbnail_url}
-                    alt={rec.video.title}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
-                    {idx + 1}
-                  </div>
-                )}
-              </div>
+              <Thumbnail video={rec.video} index={idx} />
               <div className="flex-1 min-w-0">
                 <h3 className="text-sm font-medium line-clamp-2 mb-1">
                   {rec.video.title}
@@ -66,4 +81,3 @@ export default function RecommendationSidebar({
     </div>
   )
 }
-
