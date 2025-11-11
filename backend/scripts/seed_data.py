@@ -12,8 +12,19 @@ from app.models.video import Video
 from app.ml.recommender import recommendation_service
 from passlib.context import CryptContext
 import random
+import bcrypt
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Configure bcrypt context with explicit backend to avoid compatibility issues
+pwd_context = CryptContext(
+    schemes=["bcrypt"],
+    deprecated="auto",
+    bcrypt__ident="2b"  # Use bcrypt 2b format
+)
+
+# Workaround for passlib/bcrypt compatibility
+def hash_password(password: str) -> str:
+    """Hash password using bcrypt directly"""
+    return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 # Sample video data
 SAMPLE_VIDEOS = [
@@ -226,7 +237,7 @@ def seed_users(db: Session):
         user = User(
             username=user_data["username"],
             email=user_data["email"],
-            hashed_password=pwd_context.hash(user_data["password"])
+            hashed_password=hash_password(user_data["password"])
         )
         db.add(user)
         print(f"Created user: {user_data['username']}")
